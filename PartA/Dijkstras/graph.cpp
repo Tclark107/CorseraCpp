@@ -39,6 +39,7 @@ void Graph::addEdge(int src, int dest) {
     adjList[src].push_back(dest);
     adjList[dest].push_back(src);
     numEdges++;
+    //should I default edgeValues??
 }
 
 void Graph::printGraph() {
@@ -133,6 +134,10 @@ int main() {
 
     g.setEdgeValue(0, 4, 20);
     std::cout << g.getEdgeValue(0, 4) << std::endl;
+    
+    g.deleteEdge(0,4);
+    std::cout << g.getEdgeValue(0, 4) << std::endl;
+
 
     return 0;
 }
