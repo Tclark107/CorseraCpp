@@ -22,6 +22,8 @@ class Graph {
         int getEdgeValue(int src, int dest);
         void setEdgeValue(int src, int dest, int value);
 
+        void dijkstra(Graph G);
+
     private:
         int numVertices;
         int numEdges;
@@ -104,15 +106,47 @@ int Graph::getEdgeValue(int src, int dest)
     return 0;
 }
 
+void Graph::dijkstra(Graph G)
+{
+    std::cout << "Computing shortest paths----------" << std::endl;
+
+    double arbitrarilyLargeNumber = 9999999999999999999;
+
+    std::vector<int> visited(G.getNumVertices());
+    std::vector<int> unvisited(G.getNumVertices());
+
+    std::vector<std::tuple<int,int,int>> shortestPath;
+    //for element in unvisited graph
+    //  check against other elem in unvisited graph
+    //  if adjacent
+    //      get edge value
+    //      if edge value is less than shortest path
+    //          update shortpath vector tuple with
+    //              which vertex
+    //              the length of path and
+    //              previous connected node on short path
+    //  once done put element in visited
+    //
+    
+    
+}
+
 int main() {
     Graph g(5);
     g.addEdge(0, 1);
+    g.setEdgeValue(0, 1, 3);
     g.addEdge(0, 4);
+    g.setEdgeValue(0, 4, 2);
     g.addEdge(1, 2);
+    g.setEdgeValue(1, 2, 4);
     g.addEdge(1, 3);
+    g.setEdgeValue(1, 3, 7);
     g.addEdge(1, 4);
+    g.setEdgeValue(1, 4, 3);
     g.addEdge(2, 3);
+    g.setEdgeValue(2, 3, 4);
     g.addEdge(3, 4);
+    g.setEdgeValue(3, 4, 1);
     g.printGraph();
     
     std::cout << g.getNumEdges() << std::endl;
