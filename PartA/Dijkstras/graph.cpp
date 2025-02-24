@@ -139,6 +139,7 @@ void Graph::dijkstra()
                     {
                         int weight = getEdgeValue(i,j);
                         int currentShortestPath = get<l>(shortestPath[j]);
+                        if(currentShortestPath == arbitrarilyLargeNumber;
 
 
 
