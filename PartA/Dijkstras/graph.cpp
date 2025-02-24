@@ -110,14 +110,22 @@ void Graph::dijkstra()
 {
     std::cout << "Computing shortest paths----------" << std::endl;
 
-    double arbitrarilyLargeNumber = 9999999999999999999;
+    int arbitrarilyLargeNumber = 2147483647;
 
     int length = getNumVertices();
     std::vector<int> visited(length);
-    //std::vector<int> unvisited(length);
+    std::map<int, int> unvisited(length);
+
+    for(int i = 0; i < length; i++)
+    {
+        unvisited.insert(i,i);
+    }
     
     std::vector<std::tuple<int,int,int>> shortestPath;
-    
+    for(int i = 0; i < length, i++)
+    {
+        shortestPath[i] = make_tuple(i, arbitrarilyLargeNumber, 0)
+    }
 
     for(int i = 0; i < length; i++)
     {
@@ -125,6 +133,17 @@ void Graph::dijkstra()
         {
             if(j != i)
             {
+                if(unvisited.find(j) != unvisited.end())
+                {
+                    if(isAdjacent(i,j))
+                    {
+                        int weight = getEdgeValue(i,j);
+                        int currentShortestPath = get<l>(shortestPath[j]);
+
+
+
+
+
 
 
     //  if adjacent
