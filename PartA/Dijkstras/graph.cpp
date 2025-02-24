@@ -106,18 +106,27 @@ int Graph::getEdgeValue(int src, int dest)
     return 0;
 }
 
-void Graph::dijkstra(Graph G)
+void Graph::dijkstra()
 {
     std::cout << "Computing shortest paths----------" << std::endl;
 
     double arbitrarilyLargeNumber = 9999999999999999999;
 
-    std::vector<int> visited(G.getNumVertices());
-    std::vector<int> unvisited(G.getNumVertices());
-
+    int length = getNumVertices();
+    std::vector<int> visited(length);
+    //std::vector<int> unvisited(length);
+    
     std::vector<std::tuple<int,int,int>> shortestPath;
-    //for element in unvisited graph
-    //  check against other elem in unvisited graph
+    
+
+    for(int i = 0; i < length; i++)
+    {
+        for(int j = 0; j < length; j++)
+        {
+            if(j != i)
+            {
+
+
     //  if adjacent
     //      get edge value
     //      if edge value is less than shortest path
@@ -127,8 +136,7 @@ void Graph::dijkstra(Graph G)
     //              previous connected node on short path
     //  once done put element in visited
     //
-    
-    
+    }
 }
 
 int main() {
@@ -148,29 +156,31 @@ int main() {
     g.addEdge(3, 4);
     g.setEdgeValue(3, 4, 1);
     g.printGraph();
+
+    //g.dijkstra();
     
-    std::cout << g.getNumEdges() << std::endl;
-    std::cout << g.getNumVertices() << std::endl;
-    assert(g.isAdjacent(0,1));
-    assert(g.isAdjacent(1,0));
-    assert(!g.isAdjacent(0,5));
+    //std::cout << g.getNumEdges() << std::endl;
+    //std::cout << g.getNumVertices() << std::endl;
+    //assert(g.isAdjacent(0,1));
+    //assert(g.isAdjacent(1,0));
+    //assert(!g.isAdjacent(0,5));
 
-    std::cout << g.isAdjacent(1, 2) << std::endl;
-    std::cout << g.isAdjacent(2, 1) << std::endl;
-    g.deleteEdge(1, 2);
-    std::cout << g.isAdjacent(1, 2) << std::endl;
-    std::cout << g.isAdjacent(2, 1) << std::endl;
+    //std::cout << g.isAdjacent(1, 2) << std::endl;
+    //std::cout << g.isAdjacent(2, 1) << std::endl;
+    //g.deleteEdge(1, 2);
+    //std::cout << g.isAdjacent(1, 2) << std::endl;
+    //std::cout << g.isAdjacent(2, 1) << std::endl;
 
-    std::cout << "\n\nCommence Testing Getting and Setting Edge Values\n";
-    std::cout << g.getEdgeValue(0, 4) << std::endl;
-    g.setEdgeValue(0, 4, 10);
-    std::cout << g.getEdgeValue(0, 4) << std::endl;
+    //std::cout << "\n\nCommence Testing Getting and Setting Edge Values\n";
+    //std::cout << g.getEdgeValue(0, 4) << std::endl;
+    //g.setEdgeValue(0, 4, 10);
+    //std::cout << g.getEdgeValue(0, 4) << std::endl;
 
-    g.setEdgeValue(0, 4, 20);
-    std::cout << g.getEdgeValue(0, 4) << std::endl;
-    
-    g.deleteEdge(0,4);
-    std::cout << g.getEdgeValue(0, 4) << std::endl;
+    //g.setEdgeValue(0, 4, 20);
+    //std::cout << g.getEdgeValue(0, 4) << std::endl;
+    //
+    //g.deleteEdge(0,4);
+    //std::cout << g.getEdgeValue(0, 4) << std::endl;
 
 
     return 0;
