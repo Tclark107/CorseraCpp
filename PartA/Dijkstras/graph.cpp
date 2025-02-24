@@ -106,6 +106,18 @@ int Graph::getEdgeValue(int src, int dest)
     return 0;
 }
 
+int Graph::getVertexWithSmallestAvailablePath(const std::map<int,int> unvisited, 
+        const std::vector<std::tuple<int,int,int>> shortestPath)
+{
+    //return get<0> of the result of min;
+    //return std::min(get<1>(shortestPath[j]),
+    //             get<1>(shortestPath[j]),
+    //             get<1>(shortestPath[j]),
+    //             get<1>(shortestPath[j]),
+    //             get<1>(shortestPath[j]));
+    return 0;
+}
+
 void Graph::dijkstra()
 {
     std::cout << "Computing shortest paths----------" << std::endl;
@@ -127,35 +139,34 @@ void Graph::dijkstra()
         shortestPath[i] = make_tuple(i, arbitrarilyLargeNumber, 0)
     }
 
-    for(int i = 0; i < length; i++)
+    // while there are elements in unvisited or we find that some vertices
+    // are unvisitable
+    //    get the minimum value || the first value if all equal
+    
+    auto it = unvisited.begin();
+    while(it != unvisited.end())
     {
+        int i = getVertexWithSmallestAvailablePath(unvisited, shortestPath);
         for(int j = 0; j < length; j++)
         {
-            if(j != i)
+            if(j != i && 
+               unvisited.find(j) != unvisited.end())
             {
-                if(unvisited.find(j) != unvisited.end())
+                if(isAdjacent(i,j))
                 {
-                    if(isAdjacent(i,j))
+                    int weight = getEdgeValue(i,j);
+                    int currentShortestPath = get<l>(shortestPath[j]);
+                    int pathToI = get<1>(shortestPath[i]);
+                    if(currentShortestPath == arbitrarilyLargeNumber ||
+                       currentShortestPath > (weight + pathToI)
                     {
-                        int weight = getEdgeValue(i,j);
-                        int currentShortestPath = get<l>(shortestPath[j]);
-                        if(currentShortestPath == arbitrarilyLargeNumber;
-
-
-
-
-
-
-
-    //  if adjacent
-    //      get edge value
-    //      if edge value is less than shortest path
-    //          update shortpath vector tuple with
-    //              which vertex
-    //              the length of path and
-    //              previous connected node on short path
-    //  once done put element in visited
-    //
+                        get<1>(shortestPath[j]) = weight + pathToI;
+                    }
+                }
+            }
+        }
+        visited.insert(i,i);
+        unvisited.erase(i);
     }
 }
 
