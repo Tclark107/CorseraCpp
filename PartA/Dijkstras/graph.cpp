@@ -109,13 +109,25 @@ int Graph::getEdgeValue(int src, int dest)
 int Graph::getVertexWithSmallestAvailablePath(const std::map<int,int> unvisited, 
         const std::vector<std::tuple<int,int,int>> shortestPath)
 {
-    //return get<0> of the result of min;
-    //return std::min(get<1>(shortestPath[j]),
-    //             get<1>(shortestPath[j]),
-    //             get<1>(shortestPath[j]),
-    //             get<1>(shortestPath[j]),
-    //             get<1>(shortestPath[j]));
-    return 0;
+    int currentShortestPath = arbitrarilyLargeNumber;
+    int vertexWithSmallestPath = 0;
+    for(auto const& element : unvisited)
+    {
+        if(currentShortestPath > get<1>(shortestPath[element.first])
+        {
+            currentShortestPath = get<1>(shortestPath[element.first]);
+            vertexWithSmallestPath = element.first;
+        }
+    }
+        
+    if(currentShortestPath == arbitrarilyLargeNumber)
+    {
+        std::cout << "This function should not return " << currentShortestPath 
+                  << std::endl;
+        //exit();
+    }
+
+    return vertexWithSmallestPath;
 }
 
 void Graph::dijkstra()
@@ -125,7 +137,7 @@ void Graph::dijkstra()
     int arbitrarilyLargeNumber = 2147483647;
 
     int length = getNumVertices();
-    std::vector<int> visited(length);
+    std:: visited(length);
     std::map<int, int> unvisited(length);
 
     for(int i = 0; i < length; i++)
@@ -136,17 +148,21 @@ void Graph::dijkstra()
     std::vector<std::tuple<int,int,int>> shortestPath;
     for(int i = 0; i < length, i++)
     {
-        shortestPath[i] = make_tuple(i, arbitrarilyLargeNumber, 0)
+        shortestPath[i] = make_tuple(i, arbitrarilyLargeNumber, 0);
     }
 
-    // while there are elements in unvisited or we find that some vertices
-    // are unvisitable
-    //    get the minimum value || the first value if all equal
-    
-    auto it = unvisited.begin();
-    while(it != unvisited.end())
+    while(unvisited.size() > 0) // || we find that some vertices are unvisitable
     {
         int i = getVertexWithSmallestAvailablePath(unvisited, shortestPath);
+        std::cout << "vertex with the smallest path is " << i << std::endl;
+
+        int pathToI = get<1>(shortestPath[i]);
+        if(pathToI == arbitrarilyLargeNumber)
+        {
+            std::cout << "Error: pathToI should not be " << pathToI
+                 << std::endl;
+        }
+
         for(int j = 0; j < length; j++)
         {
             if(j != i && 
@@ -156,11 +172,20 @@ void Graph::dijkstra()
                 {
                     int weight = getEdgeValue(i,j);
                     int currentShortestPath = get<l>(shortestPath[j]);
-                    int pathToI = get<1>(shortestPath[i]);
-                    if(currentShortestPath == arbitrarilyLargeNumber ||
-                       currentShortestPath > (weight + pathToI)
+                    
+                    if(pathToI == arbitrarilyLargeNumber)
+                    {
+                        std::cout << "Error: pathToI should not be " << pathToI
+                            << std::endl;
+                        std::cout << "Maybe this is the first time we see it, "
+                            << "setting to 0" << std::endl;
+                        pathToI = 0;
+                    }
+
+                    if(currentShortestPath > (weight + pathToI))
                     {
                         get<1>(shortestPath[j]) = weight + pathToI;
+                        get<2>(shortestPath[j]) = i;
                     }
                 }
             }
@@ -173,9 +198,10 @@ void Graph::dijkstra()
 int main() {
     Graph g(5);
     g.addEdge(0, 1);
+
     g.setEdgeValue(0, 1, 3);
     g.addEdge(0, 4);
-    g.setEdgeValue(0, 4, 2);
+    <g.setEdgeValue(0, 4, 2);
     g.addEdge(1, 2);
     g.setEdgeValue(1, 2, 4);
     g.addEdge(1, 3);
