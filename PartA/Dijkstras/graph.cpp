@@ -22,13 +22,15 @@ class Graph {
         int getEdgeValue(int src, int dest);
         void setEdgeValue(int src, int dest, int value);
 
-        void dijkstra(Graph G);
+        void dijkstra();
 
     private:
         int numVertices;
         int numEdges;
         std::vector<std::list<int>> adjList;
         std::map< std::pair<int,int>, int > edgeValues;
+        int getVertexWithSmallestAvailablePath(const std::map<int,int> unvisited,
+                                                const std::vector<std::tuple<int,int,int>>);
 };
 
 Graph::Graph(int numVertices = 0, int numEdges = 0) : numVertices(numVertices), 
@@ -109,15 +111,20 @@ int Graph::getEdgeValue(int src, int dest)
 int Graph::getVertexWithSmallestAvailablePath(const std::map<int,int> unvisited, 
         const std::vector<std::tuple<int,int,int>> shortestPath)
 {
+    int arbitrarilyLargeNumber = 2147483647;
     int currentShortestPath = arbitrarilyLargeNumber;
-    int vertexWithSmallestPath = 0;
-    for(auto const& element : unvisited)
+    
+    auto it = unvisited.begin();
+    int vertexWithSmallestPath = it->first;
+
+    while(it != unvisited.end())
     {
-        if(currentShortestPath > get<1>(shortestPath[element.first])
+        if(currentShortestPath > std::get<1>(shortestPath[it->first]))
         {
-            currentShortestPath = get<1>(shortestPath[element.first]);
-            vertexWithSmallestPath = element.first;
+            currentShortestPath = std::get<1>(shortestPath[it->first]);
+            vertexWithSmallestPath = it->first;
         }
+        it++;
     }
         
     if(currentShortestPath == arbitrarilyLargeNumber)
@@ -137,29 +144,32 @@ void Graph::dijkstra()
     int arbitrarilyLargeNumber = 2147483647;
 
     int length = getNumVertices();
-    std:: visited(length);
-    std::map<int, int> unvisited(length);
+    std::map<int, int> visited;
+    std::map<int, int> unvisited;
 
     for(int i = 0; i < length; i++)
     {
-        unvisited.insert(i,i);
+        unvisited.insert({i,i});
     }
     
     std::vector<std::tuple<int,int,int>> shortestPath;
-    for(int i = 0; i < length, i++)
+    for(int i = 0; i < length; i++)
     {
-        shortestPath[i] = make_tuple(i, arbitrarilyLargeNumber, 0);
+        shortestPath[i] = std::make_tuple(i, arbitrarilyLargeNumber, 0);
     }
 
-    while(unvisited.size() > 0) // || we find that some vertices are unvisitable
+    int count = 0;
+    while(count < length) 
     {
         int i = getVertexWithSmallestAvailablePath(unvisited, shortestPath);
         std::cout << "vertex with the smallest path is " << i << std::endl;
 
-        int pathToI = get<1>(shortestPath[i]);
+        int pathToI = std::get<1>(shortestPath[i]);
         if(pathToI == arbitrarilyLargeNumber)
         {
             std::cout << "Error: pathToI should not be " << pathToI
+                 << ", unless this is the first vertex we are processing "
+                 << "or the vertex is unvisitble. " 
                  << std::endl;
         }
 
@@ -171,27 +181,35 @@ void Graph::dijkstra()
                 if(isAdjacent(i,j))
                 {
                     int weight = getEdgeValue(i,j);
-                    int currentShortestPath = get<l>(shortestPath[j]);
+                    int currentShortestPath = std::get<1>(shortestPath[j]);
                     
                     if(pathToI == arbitrarilyLargeNumber)
                     {
+                        std::cout << "This should never be the case unless its the first one"
+                            << std::endl;
                         std::cout << "Error: pathToI should not be " << pathToI
                             << std::endl;
                         std::cout << "Maybe this is the first time we see it, "
                             << "setting to 0" << std::endl;
+                        std::cout << "we are; dealing with vertex: " << i 
+                            << " and vertex " << j 
+                            << "the current shortest path is " <<  std::get<1>(shortestPath[j])
+                            << " the new weight is " << weight
+                            << std::endl;
                         pathToI = 0;
                     }
 
                     if(currentShortestPath > (weight + pathToI))
                     {
-                        get<1>(shortestPath[j]) = weight + pathToI;
-                        get<2>(shortestPath[j]) = i;
+                        std::get<1>(shortestPath[j]) = weight + pathToI;
+                        std::get<2>(shortestPath[j]) = i;
                     }
                 }
             }
         }
-        visited.insert(i,i);
+        visited.insert({i,i});
         unvisited.erase(i);
+        count++;
     }
 }
 
@@ -201,7 +219,7 @@ int main() {
 
     g.setEdgeValue(0, 1, 3);
     g.addEdge(0, 4);
-    <g.setEdgeValue(0, 4, 2);
+    g.setEdgeValue(0, 4, 2);
     g.addEdge(1, 2);
     g.setEdgeValue(1, 2, 4);
     g.addEdge(1, 3);
@@ -214,7 +232,7 @@ int main() {
     g.setEdgeValue(3, 4, 1);
     g.printGraph();
 
-    //g.dijkstra();
+    g.dijkstra();
     
     //std::cout << g.getNumEdges() << std::endl;
     //std::cout << g.getNumVertices() << std::endl;
