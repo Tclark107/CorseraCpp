@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <random>
 
 class Graph {
     public:
@@ -263,27 +264,110 @@ void ShortestPath::printShortestPaths()
     }
 }
 
-int main() {
-    Graph g(5);
-    g.addEdge(0, 1);
-    g.setEdgeValue(0, 1, 3);
-    g.addEdge(0, 4);
-    g.setEdgeValue(0, 4, 2);
-    g.addEdge(1, 2);
-    g.setEdgeValue(1, 2, 4);
-    g.addEdge(1, 3);
-    g.setEdgeValue(1, 3, 7);
-    g.addEdge(1, 4);
-    g.setEdgeValue(1, 4, 3);
-    g.addEdge(2, 3);
-    g.setEdgeValue(2, 3, 4);
-    g.addEdge(3, 4);
-    g.setEdgeValue(3, 4, 1);
-    g.printGraph();
+class MonteCarlo
+{
+    public:
+        MonteCarlo();
+        Graph generateRandomGraph(int size, float density);
 
-    ShortestPath sP(g);
-    sP.dijkstra(g);
+    private:
+        int generateEdgeValue();
+
+};
+
+MonteCarlo::MonteCarlo()
+{
+}
+
+Graph MonteCarlo::generateRandomGraph(int size, float density)
+{
+
+    bool** graph;
+    srand(time(0));
+    graph = new bool*[size];
+    for(int i = 0; i < size; i++)
+    {
+        graph[i] = new bool[size];
+    }
+
+    Graph G(size);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+    
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = i; j < size; j++)
+        {
+            if(i == j) 
+            {
+                graph[i][j] = false;
+            }
+            else
+            {
+                float randomValue = dist(gen);
+                std::cout << "random valu = " << randomValue << std::endl;
+
+                graph[i][j] = graph[j][i] = (randomValue < density);
+                std::cout << "graphij = " << graph[i][j] << std::endl;
+
+                int edgeValue = generateEdgeValue();
+                std::cout << "Add an edge between vertex " << i
+                    << " and vertex " << j 
+                    << " and it has a value of " << edgeValue
+                    << std::endl;
+                G.addEdge(i, j);
+                G.setEdgeValue(i, j, edgeValue);
+            }
+        }
+    }
+    return G;
+}
+
+int MonteCarlo::generateEdgeValue()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(2, 10);
+
+    int randomNumber = dist(gen);
+    return randomNumber;
+}
+ 
+
+
+int main() {
+    //Graph g(5);
+    //g.addEdge(0, 1);
+    //g.setEdgeValue(0, 1, 3);
+    //g.addEdge(0, 4);
+    //g.setEdgeValue(0, 4, 2);
+    //g.addEdge(1, 2);
+    //g.setEdgeValue(1, 2, 4);
+    //g.addEdge(1, 3);
+    //g.setEdgeValue(1, 3, 7);
+    //g.addEdge(1, 4);
+    //g.setEdgeValue(1, 4, 3);
+    //g.addEdge(2, 3);
+    //g.setEdgeValue(2, 3, 4);
+    //g.addEdge(3, 4);
+    //g.setEdgeValue(3, 4, 1);
+    //g.printGraph();
+
+    //ShortestPath sP(g);
+    //sP.dijkstra(g);
+    //sP.printShortestPaths();
+
+    MonteCarlo mC;
+    Graph a = mC.generateRandomGraph(5, 0.60);
+    a.printGraph();
+
+    ShortestPath sP(a);
+    sP.dijkstra(a);
     sP.printShortestPaths();
+
+
     
     //std::cout << g.getNumEdges() << std::endl;
     //std::cout << g.getNumVertices() << std::endl;
