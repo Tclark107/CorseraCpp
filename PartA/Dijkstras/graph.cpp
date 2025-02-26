@@ -35,7 +35,8 @@ Graph::Graph(int numVertices = 0, int numEdges = 0) : numVertices(numVertices),
     numEdges(numEdges),
     adjList(numVertices),
     edgeValues()
-{}
+{
+}
 
 void Graph::addEdge(int src, int dest) {
     adjList[src].push_back(dest);
@@ -117,6 +118,7 @@ class ShortestPath
         ShortestPath(Graph G);
         void dijkstra(Graph G);
         void printShortestPaths();
+        float getAveragePath(Graph G);
 
     private:
         int arbitrarilyLargeNumber;
@@ -311,14 +313,17 @@ Graph MonteCarlo::generateRandomGraph(int size, float density)
 
                 graph[i][j] = graph[j][i] = (randomValue < density);
                 std::cout << "graphij = " << graph[i][j] << std::endl;
+                if(graph[i][j])
+                {
+                    int edgeValue = generateEdgeValue();
+                    std::cout << "Add an edge between vertex " << i
+                        << " and vertex " << j 
+                        << " and it has a value of " << edgeValue
+                        << std::endl;
 
-                int edgeValue = generateEdgeValue();
-                std::cout << "Add an edge between vertex " << i
-                    << " and vertex " << j 
-                    << " and it has a value of " << edgeValue
-                    << std::endl;
-                G.addEdge(i, j);
-                G.setEdgeValue(i, j, edgeValue);
+                    G.addEdge(i, j);
+                    G.setEdgeValue(i, j, edgeValue);
+                }
             }
         }
     }
@@ -336,6 +341,27 @@ int MonteCarlo::generateEdgeValue()
 }
  
 
+float ShortestPath::getAveragePath(Graph G)
+{
+    int sum = 0;
+    std::cout << "size of graph is " <<G.getNumVertices()  << std::endl;
+    for(int i = 0; i < G.getNumVertices(); i++)
+    {
+        if(std::get<1>(shortestPath[i]) == 2147483647)
+        {
+            std::get<1>(shortestPath[i]) = 0;
+        }
+
+        std::cout << "shortestpath at " << i << " is " << std::get<1>(shortestPath[i]);
+        sum += std::get<1>(shortestPath[i]);
+        std::cout << std::endl;
+        std::cout << "sum is now " << sum << std::endl;
+    }
+    std::cout << std::endl;
+    float result = static_cast<float>(sum)/G.getNumVertices(); 
+    std::cout << "result = " << result << std::endl;
+    return result;
+}
 
 int main() {
     //Graph g(5);
@@ -360,12 +386,43 @@ int main() {
     //sP.printShortestPaths();
 
     MonteCarlo mC;
-    Graph a = mC.generateRandomGraph(5, 0.60);
+    Graph a = mC.generateRandomGraph(50, 0.10);
     a.printGraph();
 
     ShortestPath sP(a);
     sP.dijkstra(a);
     sP.printShortestPaths();
+
+    int count = 100;
+    std::vector<float> avgPath;
+    for(int i = 0; i < count; i++)
+    {
+        MonteCarlo blah;
+        Graph temp = blah.generateRandomGraph(1000, 0.2);
+        temp.printGraph();
+
+        ShortestPath foo(temp);
+        foo.dijkstra(temp);
+        foo.printShortestPaths();
+        float avg = foo.getAveragePath(temp);
+        std::cout << "avg = " << avg << std::endl;
+        avgPath.push_back(avg);
+    }
+
+    std::cout << "The avg paths for " << avgPath.size() << "graphs are: " ;
+    for(int i = 0; i < count; i++)
+    {
+        std::cout << avgPath[i] << std::endl;
+    }
+
+    std::cout << "The average of the averages is ";
+    float sum = 0;
+    for(int i = 0; i < avgPath.size(); i++)
+    {
+        sum += avgPath[i];
+    }
+    float result = sum/avgPath.size();
+    std::cout << result << std::endl;
 
 
     
