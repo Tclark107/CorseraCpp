@@ -178,9 +178,8 @@ int ShortestPath::getVertexWithSmallestAvailablePath(const std::map<int,int> unv
         
     if(currentShortestPath == arbitrarilyLargeNumber)
     {
-        std::cout << "This function should not return " << currentShortestPath 
-                  << std::endl;
-        //exit();
+        //std::cout << "This function should not return " << currentShortestPath 
+        //          << std::endl;
     }
 
     return vertexWithSmallestPath;
@@ -192,22 +191,25 @@ void ShortestPath::dijkstra(Graph G)
 
     int length = G.getNumVertices();
     int count = 0;
+    int processedFirstVisit  = 0;
     while(count < length) 
     {
         int i = getVertexWithSmallestAvailablePath(unvisited, shortestPath);
-        std::cout << "vertex with the smallest path is " << i << std::endl;
-        std::cout << "the smallest path value is " << std::get<1>(shortestPath[i])
-            << std::endl;
-
-        int pathToI = std::get<1>(shortestPath[i]);
-        if(pathToI == arbitrarilyLargeNumber)
+        //std::cout << "processing vertex " << i << std::endl;
+       
+        int pathTo0 = std::get<1>(shortestPath[i]);
+        if(pathTo0 == arbitrarilyLargeNumber && processedFirstVisit)
         {
-            std::cout << "Error: pathToI should not be " << pathToI
-                 << ", unless this is the first vertex we are processing "
-                 << "or the vertex is unvisitble. " 
-                 << std::endl;
+            std::cout << "We have reached the end of the visitble nodes" 
+                << std::endl;
+            return;
         }
 
+        if(i == 0)
+        {
+            processedFirstVisit = true;
+        }
+ 
         for(int j = 0; j < length; j++)
         {
             if(j != i && 
@@ -217,26 +219,24 @@ void ShortestPath::dijkstra(Graph G)
                 {
                     int weight = G.getEdgeValue(i,j);
                     int currentShortestPath = std::get<1>(shortestPath[j]);
+                    //std::cout << "vertex " << i << " and vertex " << j<< std::endl;
+                    //std::cout << "cSP = " << currentShortestPath << std::endl;
+                    //std::cout << "pti = " << pathTo0 << std::endl;
+                    //std::cout << "weight = " << weight<< std::endl;
+
                     
-                    if(pathToI == arbitrarilyLargeNumber)
+                    if(pathTo0 == arbitrarilyLargeNumber)
                     {
-                        std::cout << "This should never be the case unless its the first one"
-                            << std::endl;
-                        std::cout << "Error: pathToI should not be " << pathToI
-                            << std::endl;
-                        std::cout << "Maybe this is the first time we see it, "
-                            << "setting to 0" << std::endl;
-                        std::cout << "we are; dealing with vertex: " << i 
-                            << " and vertex " << j 
-                            << "the current shortest path is " <<  std::get<1>(shortestPath[j])
-                            << " the new weight is " << weight
-                            << std::endl;
-                        pathToI = 0;
+                        pathTo0 = 0;
                     }
 
-                    if(currentShortestPath > (weight + pathToI))
+                    if(currentShortestPath > (weight + pathTo0))
                     {
-                        std::get<1>(shortestPath[j]) = weight + pathToI;
+                        //std::cout << "updating shortest path to " 
+                        //    << weight + pathTo0 << " from " 
+                        //    << currentShortestPath
+                        //    << std::endl;
+                        std::get<1>(shortestPath[j]) = weight + pathTo0;
                         std::get<2>(shortestPath[j]) = i;
                     }
                 }
@@ -248,9 +248,9 @@ void ShortestPath::dijkstra(Graph G)
     }
     if(count >= length)
     {
-        std::cout << "We have processed the entire visited list and "
-            << " all shortest paths should be found" 
-            << std::endl;
+        //std::cout << "We have processed the entire visited list and "
+        //    << " all shortest paths should be found" 
+        //    << std::endl;
     }
 }
 
@@ -309,17 +309,15 @@ Graph MonteCarlo::generateRandomGraph(int size, float density)
             else
             {
                 float randomValue = dist(gen);
-                std::cout << "random valu = " << randomValue << std::endl;
 
                 graph[i][j] = graph[j][i] = (randomValue < density);
-                std::cout << "graphij = " << graph[i][j] << std::endl;
                 if(graph[i][j])
                 {
                     int edgeValue = generateEdgeValue();
-                    std::cout << "Add an edge between vertex " << i
-                        << " and vertex " << j 
-                        << " and it has a value of " << edgeValue
-                        << std::endl;
+                    //std::cout << "Add an edge between vertex " << i
+                    //    << " and vertex " << j 
+                    //    << " and it has a value of " << edgeValue
+                    //    << std::endl;
 
                     G.addEdge(i, j);
                     G.setEdgeValue(i, j, edgeValue);
@@ -334,7 +332,7 @@ int MonteCarlo::generateEdgeValue()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(2, 10);
+    std::uniform_real_distribution<> dist(1, 10);
 
     int randomNumber = dist(gen);
     return randomNumber;
@@ -343,89 +341,109 @@ int MonteCarlo::generateEdgeValue()
 
 float ShortestPath::getAveragePath(Graph G)
 {
-    int sum = 0;
+    float sum = 0;
+    int newNumVertices = G.getNumVertices();
     std::cout << "size of graph is " <<G.getNumVertices()  << std::endl;
     for(int i = 0; i < G.getNumVertices(); i++)
     {
         if(std::get<1>(shortestPath[i]) == 2147483647)
         {
-            std::get<1>(shortestPath[i]) = 0;
+            //std::get<1>(shortestPath[i]) = 0;
+            newNumVertices -= 1;
+            continue;
         }
 
-        std::cout << "shortestpath at " << i << " is " << std::get<1>(shortestPath[i]);
+        //std::cout << "shortestpath at " << i << " is " << std::get<1>(shortestPath[i]);
         sum += std::get<1>(shortestPath[i]);
-        std::cout << std::endl;
-        std::cout << "sum is now " << sum << std::endl;
+        //std::cout << std::endl;
+        //std::cout << "sum is now " << sum << std::endl;
     }
     std::cout << std::endl;
-    float result = static_cast<float>(sum)/G.getNumVertices(); 
-    std::cout << "result = " << result << std::endl;
+    std::cout << " dividing " << sum << " by " << newNumVertices << std::endl;
+    if(sum == 0) return 0;
+    float result = static_cast<float>(sum)/newNumVertices; 
+    //std::cout << "result = " << result << std::endl;
     return result;
 }
 
 int main() {
-    //Graph g(5);
-    //g.addEdge(0, 1);
-    //g.setEdgeValue(0, 1, 3);
+    // I should move this to a couple different functions
+    //Graph g(6);
     //g.addEdge(0, 4);
     //g.setEdgeValue(0, 4, 2);
+    //g.addEdge(2, 4);
+    //g.setEdgeValue(2, 4, 4);
     //g.addEdge(1, 2);
-    //g.setEdgeValue(1, 2, 4);
-    //g.addEdge(1, 3);
-    //g.setEdgeValue(1, 3, 7);
-    //g.addEdge(1, 4);
-    //g.setEdgeValue(1, 4, 3);
-    //g.addEdge(2, 3);
-    //g.setEdgeValue(2, 3, 4);
-    //g.addEdge(3, 4);
-    //g.setEdgeValue(3, 4, 1);
+    //g.setEdgeValue(1, 2, 2);
+    //g.addEdge(3, 5);
+    //g.setEdgeValue(3, 5, 3);
     //g.printGraph();
 
     //ShortestPath sP(g);
     //sP.dijkstra(g);
     //sP.printShortestPaths();
-
+    //float avg = sP.getAveragePath(g);
+    //std::cout << "avg = " << avg << std::endl;
+    
+    //-----------submission-----------
+    std::cout << "Generating and finding the average of a .2 density graph" << std::endl;
     MonteCarlo mC;
-    Graph a = mC.generateRandomGraph(50, 0.10);
+    Graph a = mC.generateRandomGraph(50 , 0.20);
     a.printGraph();
-
+  
     ShortestPath sP(a);
     sP.dijkstra(a);
     sP.printShortestPaths();
+    float avg = sP.getAveragePath(a);
+    std::cout << "avg = " << avg << std::endl;
+  
+    std::cout << "Generating and finding the average of a .4 density graph" << std::endl;
+    Graph b = mC.generateRandomGraph(50 , 0.40);
+    b.printGraph();
+  
+    ShortestPath sPb(b);
+    sPb.dijkstra(b);
+    sPb.printShortestPaths();
+    float avg2 = sPb.getAveragePath(b);
+    std::cout << "avg = " << avg2 << std::endl;
+    //-----------submission-----------
 
-    int count = 100;
-    std::vector<float> avgPath;
-    for(int i = 0; i < count; i++)
-    {
-        MonteCarlo blah;
-        Graph temp = blah.generateRandomGraph(1000, 0.2);
-        temp.printGraph();
 
-        ShortestPath foo(temp);
-        foo.dijkstra(temp);
-        foo.printShortestPaths();
-        float avg = foo.getAveragePath(temp);
-        std::cout << "avg = " << avg << std::endl;
-        avgPath.push_back(avg);
-    }
+    // I should move this to a couple different functions
+    ///int count = 100;
+    ///std::vector<float> avgPath;
+    ///for(int i = 0; i < count; i++)
+    ///{
+    ///    MonteCarlo blah;
+    ///    Graph temp = blah.generateRandomGraph(50, 0.2);
+    ///    temp.printGraph();
 
-    std::cout << "The avg paths for " << avgPath.size() << "graphs are: " ;
-    for(int i = 0; i < count; i++)
-    {
-        std::cout << avgPath[i] << std::endl;
-    }
+    ///    ShortestPath foo(temp);
+    ///    foo.dijkstra(temp);
+    ///    foo.printShortestPaths();
+    ///    float avg = foo.getAveragePath(temp);
+    ///    std::cout << "avg = " << avg << std::endl;
+    ///    avgPath.push_back(avg);
+    ///}
 
-    std::cout << "The average of the averages is ";
-    float sum = 0;
-    for(int i = 0; i < avgPath.size(); i++)
-    {
-        sum += avgPath[i];
-    }
-    float result = sum/avgPath.size();
-    std::cout << result << std::endl;
+    ///std::cout << "The avg paths for " << avgPath.size() << "graphs are: " ;
+    ///for(int i = 0; i < count; i++)
+    ///{
+    ///    std::cout << avgPath[i] << std::endl;
+    ///}
+
+    ///std::cout << "The average of the averages is ";
+    ///float sum = 0;
+    ///for(int i = 0; i < avgPath.size(); i++)
+    ///{
+    ///    sum += avgPath[i];
+    ///}
+    ///float result = sum/avgPath.size();
+    ///std::cout << result << std::endl;
 
 
     
+    // I should move this to a couple different functions
     //std::cout << g.getNumEdges() << std::endl;
     //std::cout << g.getNumVertices() << std::endl;
     //assert(g.isAdjacent(0,1));
