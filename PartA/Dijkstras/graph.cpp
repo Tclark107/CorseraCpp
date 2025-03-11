@@ -5,10 +5,12 @@
 #include <cassert>
 #include <map>
 #include <random>
+//#include fileio
 
 class Graph {
     public:
         Graph(int numVertices, int numEdges);
+        //Graph(fileio infile);
         void addEdge(int src, int dest);
         void printGraph();
         int getNumEdges();
@@ -29,6 +31,7 @@ class Graph {
         int numEdges;
         std::vector<std::list<int>> adjList;
         std::map< std::pair<int,int>, int > edgeValues;
+        bool isConnected();
 };
 
 Graph::Graph(int numVertices = 0, int numEdges = 0) : numVertices(numVertices), 
@@ -37,6 +40,13 @@ Graph::Graph(int numVertices = 0, int numEdges = 0) : numVertices(numVertices),
     edgeValues()
 {
 }
+
+//Graph::Graph(fileio infile)
+//{
+//  first line is amount of nodes,
+//  addedge from elem1 to elem2
+//  addedgevalue(elem3)
+//}
 
 void Graph::addEdge(int src, int dest) {
     adjList[src].push_back(dest);
@@ -53,6 +63,38 @@ void Graph::printGraph() {
         }
         std::cout << std::endl;
     }
+}
+
+//bool Graph::isConnected(Graph G, int size)
+bool Graph::isConnected()
+{
+    int oldSize = 0;
+    int closedSetSize = 0;
+    bool* close = new bool[numVertices];
+    bool* open = new bool[numVertices];
+    for(int i = 0; i < numVertices; i++)
+    {
+        open[i] = close[i] = false;
+    }
+    open[0] = true;
+
+    while(closedSetSize < numVertices)
+    {
+        for(int i = 0; i < numVertices; i++)
+        {
+            oldSize = closedSetSize;
+            if(open[i] && (close[i] == false))
+            {
+                close[i] = true;
+                closedSetSize++;
+            }
+            for(int j = 0; j < numVertices; j++)
+            {
+                open[j] = open[j] || graph[i][j];
+            }
+        }
+        if(closedSetSize == numVertices) return true; //connected
+        if(oldSize == closedSetSize) return false; //unconnected
 }
 
 int Graph::getNumEdges()
